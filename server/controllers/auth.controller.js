@@ -58,13 +58,13 @@ export async function login(req, res) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const findUser = await User.findOne({ email });
+    const findUser = await User.findOne({ email }).select("+password");
 
     if (!findUser) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const isPasswordCorrect = User.methods.matchPassword(password);
+    const isPasswordCorrect = await findUser.matchPassword(password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -83,7 +83,7 @@ export async function login(req, res) {
       sameSite: "strict",
     });
 
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true });
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });

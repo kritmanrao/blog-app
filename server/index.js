@@ -12,6 +12,8 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
+//  optional (for form data)
+app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cookieParser());
 

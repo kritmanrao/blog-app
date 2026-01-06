@@ -15,8 +15,8 @@ router.get("/public", getPublicPosts);
 router
   .get("/", protectRoute, getMyPosts)
   .post("/", protectRoute, addPost)
-  .put("/:id", protectRoute, editPost)
-  .delete("/", protectRoute, deletePost);
+  .put("/:postId", protectRoute, editPost)
+  .delete("/:postId", protectRoute, deletePost);
 router.get("/search", protectRoute, searchPost);
 
 export default router;

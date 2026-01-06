@@ -44,7 +44,7 @@ export async function addPost(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
-
+ 
 export async function editPost(req, res) {
   try {
     const userId = req.user._id;
