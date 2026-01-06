@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cookieParser());
 
-app.use("/api/data", dataRoutes);
+app.use("/api/posts", dataRoutes);
 app.use("/api/auth", authRout);
 
 app.listen(PORT, function () {

@@ -17,18 +17,16 @@ const PostSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    isFavorite: {
-      type: Boolean,
-      default: false,
-    },
     isPublished: {
       type: Boolean,
       default: false,
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
