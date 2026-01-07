@@ -1,5 +1,4 @@
 import Post from "../module/Post.js";
-import Favorites from "../module/Favorites.js";
 import mongoose from "mongoose";
 
 export async function getMyPosts(req, res) {
@@ -51,9 +50,9 @@ export async function editPost(req, res) {
   try {
     const userId = req.user._id;
     const { postId } = req.params;
-    const { title, content, isFavorite } = req.body;
+    const { title, content, isPublished } = req.body;
 
-    if (!title && !content) {
+    if ((!title && !content) || isPublished === undefined) {
       return res.status(400).json({
         message: "At least one field is required to update",
       });
@@ -64,6 +63,7 @@ export async function editPost(req, res) {
       {
         ...(title && { title: title.trim() }),
         ...(content && { content: content.trim() }),
+        isPublished,
       },
       { new: true }
     );
@@ -72,8 +72,7 @@ export async function editPost(req, res) {
       return res.status(404).json({
         message: "Post not found or unauthorized",
       });
-    }
-
+    } 
     res.status(200).json({
       success: true,
       message: "Post updated successfully",
@@ -85,43 +84,10 @@ export async function editPost(req, res) {
   }
 }
 
-export async function toggleFavorite(req, res) {
-  try {
-    const userId = req.user._id;
-    const { postId } = req.params;
-
-    const favorites = await Favorites.findOne({ user: userId });
-
-    let updated;
-
-    if (favorites?.favorites.includes(postId)) {
-      updated = await Favorites.findOneAndUpdate(
-        { user: userId },
-        { $pull: { favorites: postId } },
-        { new: true }
-      );
-    } else {
-      updated = await Favorites.findOneAndUpdate(
-        { user: userId },
-        { $addToSet: { favorites: postId } },
-        { new: true, upsert: true }
-      );
-    }
-
-    res.status(200).json({
-      success: true,
-      favorites: updated.favorites,
-    });
-  } catch (error) {
-    console.error("Error toggling favorite:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
 export async function toggleLike(req, res) {
   try {
     const { postId } = req.params;
-    const userId = req.user._id; 
+    const userId = req.user._id;
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: "Invalid post ID" });
     }
@@ -146,7 +112,6 @@ export async function toggleLike(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
-
 
 export async function deletePost(req, res) {
   try {
@@ -204,4 +169,3 @@ export async function searchPost(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
- 

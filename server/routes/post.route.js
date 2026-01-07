@@ -7,21 +7,18 @@ import {
   searchPost,
   getMyPosts,
   getPublicPosts,
-  toggleFavorite,
   toggleLike,
-} from "../controllers/api.controller.js";
+} from "../controllers/post.controller.js";
 
 const router = express.Router();
 
 router.get("/public", getPublicPosts);
 router
   .get("/", protectRoute, getMyPosts)
-  .post("/", protectRoute, addPost)
-  .post("/:postId/favorite", protectRoute, toggleFavorite)
+  .post("/", protectRoute, addPost) 
   .post("/:postId/like", protectRoute, toggleLike)
   .patch("/:postId", protectRoute, editPost)
   .delete("/:postId", protectRoute, deletePost);
-  
-router.get("/search", protectRoute, searchPost);
 
+router.get("/search", searchPost);
 export default router;
