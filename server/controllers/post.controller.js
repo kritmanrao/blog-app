@@ -1,10 +1,10 @@
-import Post from "../module/Post.js";
+import Post from "../models/Post.js";
 import mongoose from "mongoose";
 
 export async function getMyPosts(req, res) {
   const userId = req.user._id;
   const posts = await Post.find({ user: userId });
-  res.status(200).json(posts);
+  res.status(200).json({ data: posts });
 }
 
 export async function getPublicPosts(req, res) {
@@ -12,7 +12,7 @@ export async function getPublicPosts(req, res) {
     "user",
     "fullName avatar"
   );
-  res.status(200).json(posts);
+  res.status(200).json({ data: posts });
 }
 export async function addPost(req, res) {
   try {
@@ -38,7 +38,7 @@ export async function addPost(req, res) {
     res.status(201).json({
       success: true,
       message: "Post added successfully",
-      post: newPost,
+      data: newPost,
     });
   } catch (error) {
     console.error("Error adding post:", error);
@@ -72,11 +72,11 @@ export async function editPost(req, res) {
       return res.status(404).json({
         message: "Post not found or unauthorized",
       });
-    } 
+    }
     res.status(200).json({
       success: true,
       message: "Post updated successfully",
-      post: updatedPost,
+      data: updatedPost,
     });
   } catch (error) {
     console.error("Error editing post:", error);
@@ -162,7 +162,7 @@ export async function searchPost(req, res) {
     res.status(200).json({
       success: true,
       count: posts.length,
-      posts,
+      data: posts,
     });
   } catch (error) {
     console.error("Error searching posts:", error);

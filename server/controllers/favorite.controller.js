@@ -1,4 +1,4 @@
-import Favorites from "../module/Favorites";
+import Favorites from "../models/Favorites.js";
 
 export async function getFavoritePost(req, res) {
   try {
@@ -6,10 +6,10 @@ export async function getFavoritePost(req, res) {
     const favoritesPosts = await Favorites.findOne({ user: userId });
     res.status(200).json({
       success: true,
-      favoritesPosts,
+      data: favoritesPosts,
     });
   } catch (error) {
-    console.error("Error in Feaching favorite posts:", error);
+    console.error("Error in fetch favorite posts:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -39,7 +39,7 @@ export async function toggleFavorite(req, res) {
 
     res.status(200).json({
       success: true,
-      favorites: updated.favorites,
+      data: updated.favorites,
     });
   } catch (error) {
     console.error("Error toggling favorite:", error);

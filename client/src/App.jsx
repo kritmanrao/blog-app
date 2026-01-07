@@ -1,3 +1,4 @@
+import { signup } from "./service/user";
 function App() {
   return (
     <div>

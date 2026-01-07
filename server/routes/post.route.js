@@ -15,9 +15,9 @@ const router = express.Router();
 router.get("/public", getPublicPosts);
 router
   .get("/", protectRoute, getMyPosts)
-  .post("/", protectRoute, addPost) 
+  .post("/", protectRoute, addPost)
   .post("/:postId/like", protectRoute, toggleLike)
-  .patch("/:postId", protectRoute, editPost)
+  .put("/:postId", protectRoute, editPost)
   .delete("/:postId", protectRoute, deletePost);
 
 router.get("/search", searchPost);

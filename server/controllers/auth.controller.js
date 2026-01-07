@@ -1,4 +1,4 @@
-import User from "../module/User.js";
+import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 export async function signup(req, res) {
@@ -42,7 +42,7 @@ export async function signup(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "strict",
-    });
+    }); 
     res.status(201).json({ success: true, user: newUser });
   } catch (error) {
     console.log("Error in signup controller", error);
