@@ -1,132 +1,47 @@
-/*
-import { createSlice } from "@reduxjs/toolkit"; 
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  balance: 0,
-  loan: 0,
-  loanPurpose: "",
-  isLoading: "",
+  user: null,          // null when not logged in
+  isAuthenticated: false,
+  authChecked: false,  // very important for protected routes
 };
 
-const accountSlice = createSlice({
-  name: "account",
+const userSlice = createSlice({
+  name: "user",
   initialState,
   reducers: {
-    deposit(state, action) {
-      state.balance += action.payload;
-      state.isLoading = false;
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.authChecked = true;
     },
-    withdraw(state, action) {
-      state.balance -= action.payload;
+
+    logoutUser: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.authChecked = true;
     },
-    requestLoan: {
-      prepare(amount, purpose) {
-        return {
-          payload: {
-            amount,
-            purpose,
-          },
+
+    updateUser: (state, action) => {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
         };
-      },
-      reducer(state, action) {
-        if (state.loan > 0) return;
-        state.loan = action.payload.amount;
-        state.loanPurpose = action.payload.purpose;
-        state.balance += action.payload.amount;
-      },
+      }
     },
-    payLoan(state) {
-      state.balance -= state.loan;
-      state.loan = 0;
-      state.loanPurpose = "";
-    },
-    currencyConverting(state) {
-      state.isLoading = true;
+
+    setAuthChecked: (state) => {
+      state.authChecked = true;
     },
   },
 });
 
-export const { withdraw, requestLoan, payLoan } = accountSlice.actions;
+export const {
+  setUser,
+  logoutUser,
+  updateUser,
+  setAuthChecked,
+} = userSlice.actions;
 
-export function deposit(amount, currencyType) {
-  if (currencyType === "INR")
-    return { type: "account/deposit", payload: amount };
-
-  return async function (dispatch, getState) {
-    dispatch({ type: "account/currencyConverting" });
-    const res = await fetch(
-      `https://api.frankfurter.dev/v1/latest?base=${currencyType}&symbols=INR`
-    );
-    const data = await res.json();
-    const converted = parseInt((amount * data.rates["INR"]).toFixed(2));
-    dispatch({ type: "account/deposit", payload: converted });
-  };
-}
-
-export default accountSlice.reducer;
-
-/*  
-export default function accountReducer(state = initialStateAccount, action) {
-  switch (action.type) {
-    case "account/deposit":
-      return {
-        ...state,
-        balance: state.balance + action.payload,
-        isLoading: false,
-      };
-    case "account/withdraw":
-      return { ...state, balance: state.balance - action.payload };
-    case "account/requestLoan":
-      if (state.loan > 0) return state;
-      return {
-        ...state,
-        loan: action.payload.amount,
-        balance: state.balance + action.payload.amount,
-        loanPurpose: action.payload.purpose,
-      };
-    case "account/payLoan":
-      return {
-        ...state,
-        loan: 0,
-        balance: state.balance - state.loan,
-        loanPurpose: "",
-      };
-    case "account/currencyConverting":
-      return {
-        ...state,
-        isLoading: true,
-      };
-    default:
-      return state;
-  }
-}
-
-export function deposit(amount, currencyType) {
-  if (currencyType === "INR")
-    return { type: "account/deposit", payload: amount };
-
-  return async function (dispatch, getState) {
-    dispatch({ type: "account/currencyConverting" });
-    const res = await fetch(
-      `https://api.frankfurter.dev/v1/latest?base=${currencyType}&symbols=INR`
-    );
-    const data = await res.json();
-    const converted = parseInt((amount * data.rates["INR"]).toFixed(2));
-    dispatch({ type: "account/deposit", payload: converted });
-  };
-}
-export function withdraw(amount) {
-  return { type: "account/withdraw", payload: amount };
-}
-export function requestLoan(amount, purpose) {
-  return {
-    type: "account/requestLoan",
-    payload: { amount, purpose },
-  };
-}
-export function payLoan() {
-  return { type: "account/payLoan" };
-}
-
-
-*/
+export default userSlice.reducer;

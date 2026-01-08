@@ -1,137 +1,136 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  getFavoritePosts,
+  getMyPosts,
+  getPublicPosts,
+  getSearchPost,
+} from "../../service/post";
+
+/* ------------------ ASYNC THUNKS ------------------ */
+
+export const fetchMyPosts = createAsyncThunk(
+  "post/fetchMyPosts",
+  async (signal, { rejectWithValue }) => {
+    try {
+      const res = await getMyPosts(signal);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+export const fetchPublicPosts = createAsyncThunk(
+  "post/fetchPublicPosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getPublicPosts();
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+export const fetchFavoritePosts = createAsyncThunk(
+  "post/fetchFavoritePosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getFavoritePosts();
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+export const fetchSearchPosts = createAsyncThunk(
+  "post/fetchSearchPosts",
+  async (query, { rejectWithValue }) => {
+    try {
+      const res = await getSearchPost(query);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+/* ------------------ SLICE ------------------ */
 
 const initialState = {
+  isLoading: false,
   posts: [],
-  searchPost: "",
+  publicPosts: [],
+  favoritePosts: [],
+  searchPosts: [],
+  error: null,
 };
 
 const postSlice = createSlice({
   name: "post",
-  reducers: {},
-});
-
-/*
-import { createSlice } from "@reduxjs/toolkit"; 
-
-const accountSlice = createSlice({
-  name: "account",
   initialState,
-  reducers: {
-    deposit(state, action) {
-      state.balance += action.payload;
-      state.isLoading = false;
-    },
-    withdraw(state, action) {
-      state.balance -= action.payload;
-    },
-    requestLoan: {
-      prepare(amount, purpose) {
-        return {
-          payload: {
-            amount,
-            purpose,
-          },
-        };
-      },
-      reducer(state, action) {
-        if (state.loan > 0) return;
-        state.loan = action.payload.amount;
-        state.loanPurpose = action.payload.purpose;
-        state.balance += action.payload.amount;
-      },
-    },
-    payLoan(state) {
-      state.balance -= state.loan;
-      state.loan = 0;
-      state.loanPurpose = "";
-    },
-    currencyConverting(state) {
-      state.isLoading = true;
-    },
+  reducers: {},
+
+  extraReducers: (builder) => {
+    builder
+
+      /* ---------- MY POSTS ---------- */
+      .addCase(fetchMyPosts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.posts = action.payload;
+      })
+      .addCase(fetchMyPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      /* ---------- PUBLIC POSTS ---------- */
+      .addCase(fetchPublicPosts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPublicPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.publicPosts = action.payload;
+      })
+      .addCase(fetchPublicPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      /* ---------- FAVORITE POSTS ---------- */
+      .addCase(fetchFavoritePosts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchFavoritePosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.favoritePosts = action.payload;
+      })
+      .addCase(fetchFavoritePosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      /* ---------- SEARCH POSTS ---------- */
+      .addCase(fetchSearchPosts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchSearchPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.searchPosts = action.payload;
+      })
+      .addCase(fetchSearchPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { withdraw, requestLoan, payLoan } = accountSlice.actions;
-
-export function deposit(amount, currencyType) {
-  if (currencyType === "INR")
-    return { type: "account/deposit", payload: amount };
-
-  return async function (dispatch, getState) {
-    dispatch({ type: "account/currencyConverting" });
-    const res = await fetch(
-      `https://api.frankfurter.dev/v1/latest?base=${currencyType}&symbols=INR`
-    );
-    const data = await res.json();
-    const converted = parseInt((amount * data.rates["INR"]).toFixed(2));
-    dispatch({ type: "account/deposit", payload: converted });
-  };
-}
-
-export default accountSlice.reducer;
-
-/*  
-export default function accountReducer(state = initialStateAccount, action) {
-  switch (action.type) {
-    case "account/deposit":
-      return {
-        ...state,
-        balance: state.balance + action.payload,
-        isLoading: false,
-      };
-    case "account/withdraw":
-      return { ...state, balance: state.balance - action.payload };
-    case "account/requestLoan":
-      if (state.loan > 0) return state;
-      return {
-        ...state,
-        loan: action.payload.amount,
-        balance: state.balance + action.payload.amount,
-        loanPurpose: action.payload.purpose,
-      };
-    case "account/payLoan":
-      return {
-        ...state,
-        loan: 0,
-        balance: state.balance - state.loan,
-        loanPurpose: "",
-      };
-    case "account/currencyConverting":
-      return {
-        ...state,
-        isLoading: true,
-      };
-    default:
-      return state;
-  }
-}
-
-export function deposit(amount, currencyType) {
-  if (currencyType === "INR")
-    return { type: "account/deposit", payload: amount };
-
-  return async function (dispatch, getState) {
-    dispatch({ type: "account/currencyConverting" });
-    const res = await fetch(
-      `https://api.frankfurter.dev/v1/latest?base=${currencyType}&symbols=INR`
-    );
-    const data = await res.json();
-    const converted = parseInt((amount * data.rates["INR"]).toFixed(2));
-    dispatch({ type: "account/deposit", payload: converted });
-  };
-}
-export function withdraw(amount) {
-  return { type: "account/withdraw", payload: amount };
-}
-export function requestLoan(amount, purpose) {
-  return {
-    type: "account/requestLoan",
-    payload: { amount, purpose },
-  };
-}
-export function payLoan() {
-  return { type: "account/payLoan" };
-}
-
-
-*/
+export default postSlice.reducer;

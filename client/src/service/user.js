@@ -61,6 +61,7 @@ export async function getMe(signal) {
     });
     return response.data;
   } catch (error) {
+    console.log("error in getMe", error);
     return null; // user not logged in
   }
 }

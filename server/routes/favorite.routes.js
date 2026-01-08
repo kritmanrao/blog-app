@@ -4,7 +4,7 @@ import {
   getFavoritePost,
   toggleFavorite,
 } from "../controllers/favorite.controller.js";
-
+ 
 const router = express.Router();
 
 router

@@ -75,8 +75,7 @@ export async function editPost(postId, newData) {
 }
 
 /* ---------- SEARCH ---------- */
-
-export async function searchPost(query) {
+export async function getSearchPost(query) {
   try {
     const res = await axios.get(`${BASE_URI}/search`, {
       params: { q: query },
@@ -88,7 +87,6 @@ export async function searchPost(query) {
   }
 }
 /* ---------- Favorite / UnFavorite ---------- */
-
 export async function toggleFavorite(postId) {
   try {
     const res = await axios.post(
