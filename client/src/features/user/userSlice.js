@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,          // null when not logged in
+  user: null, // null when not logged in
   isAuthenticated: false,
-  authChecked: false,  // very important for protected routes
+  authChecked: false, // very important for protected routes
 };
 
 const userSlice = createSlice({
@@ -37,11 +37,7 @@ const userSlice = createSlice({
   },
 });
 
-export const {
-  setUser,
-  logoutUser,
-  updateUser,
-  setAuthChecked,
-} = userSlice.actions;
+export const { setUser, logoutUser, updateUser, setAuthChecked } =
+  userSlice.actions;
 
 export default userSlice.reducer;

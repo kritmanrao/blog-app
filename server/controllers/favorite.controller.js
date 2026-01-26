@@ -3,10 +3,12 @@ import Favorites from "../models/Favorites.js";
 export async function getFavoritePost(req, res) {
   try {
     const userId = req.user._id;
+
     const favoritesPosts = await Favorites.findOne({ user: userId });
+
     res.status(200).json({
       success: true,
-      data: favoritesPosts,
+      data: [favoritesPosts],
     });
   } catch (error) {
     console.error("Error in fetch favorite posts:", error);
@@ -27,13 +29,13 @@ export async function toggleFavorite(req, res) {
       updated = await Favorites.findOneAndUpdate(
         { user: userId },
         { $pull: { favorites: postId } },
-        { new: true }
+        { new: true },
       );
     } else {
       updated = await Favorites.findOneAndUpdate(
         { user: userId },
         { $addToSet: { favorites: postId } },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
     }
 

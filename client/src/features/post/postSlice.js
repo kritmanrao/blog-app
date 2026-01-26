@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getFavoritePosts,
-  getMyPosts,
+  getMyPosts, 
   getPublicPosts,
   getSearchPost,
 } from "../../service/post";
 
 /* ------------------ ASYNC THUNKS ------------------ */
-
 export const fetchMyPosts = createAsyncThunk(
   "post/fetchMyPosts",
   async (signal, { rejectWithValue }) => {

@@ -53,6 +53,7 @@ export async function logout() {
 }
 
 /* ---------------- GET CURRENT USER ---------------- */
+
 export async function getMe(signal) {
   try {
     const response = await axios.get(`${BASE_URI}/me`, {
@@ -61,7 +62,11 @@ export async function getMe(signal) {
     });
     return response.data;
   } catch (error) {
-    console.log("error in getMe", error);
-    return null; // user not logged in
+    if (axios.isCancel?.(error)) return null;
+
+    // 401 = not logged in -> no need to spam console
+    if (error.response?.status === 401) return null;
+
+    return null;
   }
 }
