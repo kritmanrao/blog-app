@@ -140,14 +140,4 @@ MIT License
 
 **Kritmaan Rao**
 B.Tech CSE | Full-Stack Developer
-
-```
-
-If you want:
-- **GitHub-optimized README**
-- **Portfolio-ready version**
-- **Resume-friendly project description**
-- **API documentation**
-
-Just say it — I’ve got you 👌
-```
+ 
