@@ -34,6 +34,11 @@ app.use("/api/auth", authRout);
 app.use("/api/posts", postRoute);
 app.use("/api/posts/favorite", favoriteRoute);
 
+app.get("/k", async function (_, res) {
+  const data = await Favorites.find({});
+  res.json(data);
+});
+
 app.listen(PORT, () => {
   console.log(`server live at http://localhost:${PORT}`);
   connectDB();

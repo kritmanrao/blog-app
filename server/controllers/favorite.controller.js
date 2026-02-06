@@ -6,6 +6,8 @@ export async function getFavoritePost(req, res) {
 
     const favoritesPosts = await Favorites.findOne({ user: userId });
 
+    console.log(favoritesPosts.length);
+
     res.status(200).json({
       success: true,
       data: [favoritesPosts],
