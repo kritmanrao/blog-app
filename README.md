@@ -20,18 +20,6 @@ A full-stack Blog Application where users can create, read, like, and manage blo
 
 ## 🛠 Tech Stack
 
-## 📸 Screenshots
-
-<p align="center">
-  <img src="screenshots/home.png" width="80%" />
-</p>
-
-<p align="center">
-  <img src="screenshots/login.png" width="45%" />
-  <img src="screenshots/create-blog.png" width="45%" />
-  <img src="screenshots/my-posts.png" width="45%" />
-</p>
-
 ### Frontend
 
 - React.js
@@ -118,7 +106,17 @@ npm run dev
 
 ## 📸 Screenshots
 
-(Add screenshots here)
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/home.png" width="80%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/login.png" width="45%" />
+  <img src="screenshots/create-blog.png" width="45%" />
+  <img src="screenshots/my-posts.png" width="45%" />
+</p>
 
 ---
 
