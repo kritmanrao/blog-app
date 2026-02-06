@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getFavoritePosts,
-  getMyPosts, 
+  getMyPosts,
   getPublicPosts,
   getSearchPost,
 } from "../../service/post";

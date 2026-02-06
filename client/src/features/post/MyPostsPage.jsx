@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   getMyPosts,
@@ -9,7 +9,10 @@ import {
   toggleLike,
   deletePost,
   editPost,
+  toggleFavorite,
 } from "../../service/post";
+
+import { fetchFavoritePosts } from "./postSlice.js";
 
 export default function MyPostsPage() {
   const [posts, setPosts] = useState([]);
@@ -21,6 +24,7 @@ export default function MyPostsPage() {
   const navigate = useNavigate();
 
   const { authChecked, isAuthenticated } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   // Fetch posts useNavigate
   useEffect(() => {
@@ -35,8 +39,9 @@ export default function MyPostsPage() {
         // Not logged in / error → backend returned 401 → service returned null
         if (!myPosts || canceled) return;
 
-        const favIds = new Set(favorites?.map((p) => p._id));
+        const favIds = new Set(favorites);
         setFavoriteIds(favIds);
+        dispatch(fetchFavoritePosts(favIds));
 
         const sortedPosts = [
           // favorites first
@@ -60,10 +65,16 @@ export default function MyPostsPage() {
     return () => {
       canceled = true;
     };
-  }, []);
+  }, [dispatch]);
   // Handle like toggle
   const handleToggleLike = async (postId) => {
     const res = await toggleLike(postId);
+  };
+
+  // handle Favorite toggle
+
+  async function handleToggleFavorite(postId) {
+    const res = await toggleFavorite(postId);
     if (res?.success) {
       setFavoriteIds((prev) => {
         const updated = new Set(prev);
@@ -78,7 +89,7 @@ export default function MyPostsPage() {
         ...prevPosts.filter((p) => favoriteIds.has(p._id) && p._id !== postId),
       ]);
     }
-  };
+  }
 
   // Handle delete
   const handleDelete = async (postId) => {
@@ -107,6 +118,7 @@ export default function MyPostsPage() {
   // Save edit
   const saveEdit = async (postId) => {
     const updated = await editPost(postId, editData);
+
     if (updated) {
       setPosts((prev) =>
         prev.map((p) => (p._id === postId ? { ...p, ...updated } : p)),
@@ -233,7 +245,7 @@ export default function MyPostsPage() {
                       ? "bg-green-500 text-black"
                       : "bg-white/20 text-white"
                   }`}
-                  onClick={() => handleToggleLike(post._id)}
+                  onClick={() => handleToggleFavorite(post._id)}
                 >
                   {favoriteIds.has(post._id) ? "Unfavorite" : "Favorite"}
                 </button>

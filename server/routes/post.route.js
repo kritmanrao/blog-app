@@ -17,7 +17,7 @@ router
   .get("/", protectRoute, getMyPosts)
   .post("/", protectRoute, addPost)
   .post("/:postId/like", protectRoute, toggleLike)
-  .put("/:postId", protectRoute, editPost)
+  .put("/:postId", protectRoute, editPost) 
   .delete("/:postId", protectRoute, deletePost);
 
 router.get("/search", searchPost);

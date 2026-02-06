@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  toggleLike,
-  toggleFavorite,
-  getFavoritePosts,
-} from "../../service/post";
+import { toggleLike, toggleFavorite } from "../../service/post";
 // adjust path if PostView is in different folder
 
 function formatDate(iso) {
@@ -33,6 +29,8 @@ export default function PostView() {
     authChecked,
   } = useSelector((s) => s.user);
 
+  const { favoritePosts } = useSelector((s) => s.post);
+
   // keep a local copy so we can update likes instantly
   const [post, setPost] = useState(postFromState);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -59,24 +57,11 @@ export default function PostView() {
   useEffect(() => {
     if (!authChecked) return;
     if (!isAuthenticated) return;
-
     (async () => {
-      const favDoc = await getFavoritePosts(); // backend returns { favorites: [...] } doc (or null)
-
-      // Your backend returns: data: favoritesPosts (document)
-      // favorites list is in favDoc?.favorites
-      const favList = Array.isArray(favDoc?.favorites) ? favDoc.favorites : [];
-
-      // post._id is string. favList entries might be strings or objects
-      const favIds = new Set(
-        favList
-          .map((x) => (typeof x === "string" ? x : x?._id))
-          .filter(Boolean),
-      );
-
-      setIsFavorited(favIds.has(post._id));
+      const flag = favoritePosts.filter((id) => id === post._id);
+      setIsFavorited(flag ? true : false);
     })();
-  }, [authChecked, isAuthenticated, post._id]);
+  }, [authChecked, favoritePosts, isAuthenticated, post._id]);
 
   const requireLogin = () => {
     navigate("/login", { replace: true, state: { from: location } });
@@ -112,14 +97,10 @@ export default function PostView() {
     setBusy(true);
     try {
       const res = await toggleFavorite(post._id); // returns { success, data: [ids...] }
+
       if (!res?.success) return;
 
-      const arr = Array.isArray(res.data) ? res.data : [];
-      const favIds = new Set(
-        arr.map((x) => (typeof x === "string" ? x : x?._id)).filter(Boolean),
-      );
-
-      setIsFavorited(favIds.has(post._id));
+      setIsFavorited(false);
     } finally {
       setBusy(false);
     }

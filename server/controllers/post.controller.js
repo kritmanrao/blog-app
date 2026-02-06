@@ -10,7 +10,7 @@ export async function getMyPosts(req, res) {
 export async function getPublicPosts(req, res) {
   const posts = await Post.find({ isPublished: true }).populate(
     "user",
-    "fullName avatar"
+    "fullName avatar",
   );
   res.status(200).json({ data: posts });
 }
@@ -23,7 +23,7 @@ export async function addPost(req, res) {
       return res.status(400).json({
         message: "All fields are required",
         missingFields: [!title && "title", !content && "content"].filter(
-          Boolean
+          Boolean,
         ),
       });
     }
@@ -50,9 +50,9 @@ export async function editPost(req, res) {
   try {
     const userId = req.user._id;
     const { postId } = req.params;
-    const { title, content, isPublished } = req.body;
+    const { title, content } = req.body;
 
-    if ((!title && !content) || isPublished === undefined) {
+    if (!title && !content) {
       return res.status(400).json({
         message: "At least one field is required to update",
       });
@@ -63,9 +63,8 @@ export async function editPost(req, res) {
       {
         ...(title && { title: title.trim() }),
         ...(content && { content: content.trim() }),
-        isPublished,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedPost) {
@@ -73,6 +72,7 @@ export async function editPost(req, res) {
         message: "Post not found or unauthorized",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "Post updated successfully",
@@ -87,12 +87,14 @@ export async function editPost(req, res) {
 export async function toggleLike(req, res) {
   try {
     const { postId } = req.params;
+
     const userId = req.user._id;
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: "Invalid post ID" });
     }
 
     const post = await Post.findById(postId);
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }

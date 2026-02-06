@@ -44,7 +44,7 @@ export async function toggleLike(postId) {
       {},
       { withCredentials: true },
     );
-    return res.data;
+    return res.data; 
   } catch {
     return null;
   }
